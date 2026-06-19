@@ -3,6 +3,7 @@ package com.workflowx.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.workflowx.dto.request.CreateRequestRequest;
@@ -24,6 +25,7 @@ public class RequestService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
 
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public RequestResponse createRequest(
             CreateRequestRequest requestDto
     ) {
@@ -63,6 +65,7 @@ public class RequestService {
         return mapToResponse(savedRequest);
     }
 
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public List<RequestResponse> getMyRequests() {
 
         String email =
@@ -83,6 +86,7 @@ public class RequestService {
                 .toList();
     }
 
+
     public RequestResponse getRequestById(
             String requestId
     ) {
@@ -98,6 +102,7 @@ public class RequestService {
         return mapToResponse(request);
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     public RequestResponse approveRequest(
             String requestId,
             UpdateRequestStatusRequest dto
@@ -129,6 +134,7 @@ public class RequestService {
         return mapToResponse(savedRequest);
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     public RequestResponse rejectRequest(
             String requestId,
             UpdateRequestStatusRequest dto
@@ -160,6 +166,7 @@ public class RequestService {
         return mapToResponse(savedRequest);
     }
 
+    @PreAuthorize("hasRole('EMPLOYEE')")
     public RequestResponse cancelRequest(
             String requestId
     ) {
@@ -196,6 +203,7 @@ public class RequestService {
         return mapToResponse(savedRequest);
     }
 
+    
     private void validatePendingRequest(
             Request request
     ) {
