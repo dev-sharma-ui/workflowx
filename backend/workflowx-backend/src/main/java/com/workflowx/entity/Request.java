@@ -1,8 +1,18 @@
 package com.workflowx.entity;
 
+import java.time.LocalDateTime;
+
 import com.workflowx.enums.RequestStatus;
 import com.workflowx.enums.RequestType;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,4 +39,10 @@ public class Request extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private User employee;
+    
+    private LocalDateTime submittedAt;
+
+    private LocalDateTime approvedAt;
+
+    private LocalDateTime rejectedAt;
 }
