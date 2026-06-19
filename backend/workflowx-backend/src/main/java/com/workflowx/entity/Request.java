@@ -39,10 +39,14 @@ public class Request extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private User employee;
-    
+
+    @Column(nullable = false)
     private LocalDateTime submittedAt;
 
     private LocalDateTime approvedAt;
 
     private LocalDateTime rejectedAt;
+
+    @Column(length = 1000)
+    private String managerComments;
 }
