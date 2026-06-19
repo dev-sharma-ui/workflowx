@@ -1,13 +1,20 @@
 package com.workflowx;
 
+import java.util.TimeZone;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class WorkflowxBackendApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(WorkflowxBackendApplication.class, args);
-	}
+    public static void main(String[] args) {
 
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
+        SpringApplication.run(
+                WorkflowxBackendApplication.class,
+                args
+        );
+    }
 }
