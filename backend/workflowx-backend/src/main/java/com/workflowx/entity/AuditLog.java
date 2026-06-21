@@ -1,7 +1,11 @@
 package com.workflowx.entity;
 
+import com.workflowx.enums.AuditAction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +20,11 @@ public class AuditLog extends BaseEntity {
     private String userId;
 
     @Column(nullable = false)
-    private String action;
+    private String userEmail;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AuditAction action;
 
     @Column(nullable = false)
     private String entityType;

@@ -11,6 +11,7 @@ import com.workflowx.dto.request.RequestResponse;
 import com.workflowx.dto.request.UpdateRequestStatusRequest;
 import com.workflowx.entity.Request;
 import com.workflowx.entity.User;
+import com.workflowx.enums.AuditAction;
 import com.workflowx.enums.RequestStatus;
 import com.workflowx.repository.RequestRepository;
 import com.workflowx.repository.UserRepository;
@@ -24,6 +25,7 @@ public class RequestService {
 
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
+    private final AuditService auditService;
 
     @PreAuthorize("hasRole('EMPLOYEE')")
     public RequestResponse createRequest(
@@ -61,6 +63,15 @@ public class RequestService {
 
         Request savedRequest =
                 requestRepository.save(request);
+
+        auditService.logAction(
+        employee.getId(),
+        employee.getEmail(),
+        AuditAction.REQUEST_CREATED,
+        "REQUEST",
+        savedRequest.getId(),
+        "Request created: " + savedRequest.getTitle()
+        );
 
         return mapToResponse(savedRequest);
     }
@@ -130,7 +141,25 @@ public class RequestService {
 
         Request savedRequest =
                 requestRepository.save(request);
+        String managerEmail =
+        SecurityUtils.getCurrentUserEmail();
 
+        User manager =
+                userRepository.findByEmail(managerEmail)
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Manager not found"
+                        )
+                );
+
+        auditService.logAction(
+                manager.getId(),
+                manager.getEmail(),
+                AuditAction.REQUEST_APPROVED,
+                "REQUEST",
+                savedRequest.getId(),
+                "Request approved: " + savedRequest.getTitle()
+        );
         return mapToResponse(savedRequest);
     }
 
@@ -162,7 +191,25 @@ public class RequestService {
 
         Request savedRequest =
                 requestRepository.save(request);
+        String managerEmail =
+        SecurityUtils.getCurrentUserEmail();
 
+        User manager =
+                userRepository.findByEmail(managerEmail)
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Manager not found"
+                        )
+                );
+
+        auditService.logAction(
+        manager.getId(),
+        manager.getEmail(),
+        AuditAction.REQUEST_REJECTED,
+        "REQUEST",
+        savedRequest.getId(),
+        "Request rejected: " + savedRequest.getTitle()
+        );
         return mapToResponse(savedRequest);
     }
 
@@ -199,7 +246,22 @@ public class RequestService {
 
         Request savedRequest =
                 requestRepository.save(request);
+        User employee =
+        userRepository.findByEmail(email)
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "User not found"
+                        )
+                );
 
+        auditService.logAction(
+        employee.getId(),
+        employee.getEmail(),
+        AuditAction.REQUEST_CANCELLED,
+        "REQUEST",
+        savedRequest.getId(),
+        "Request cancelled: " + savedRequest.getTitle()
+        );
         return mapToResponse(savedRequest);
     }
 
