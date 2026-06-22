@@ -26,6 +26,7 @@ public class RequestService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
     private final AuditService auditService;
+    private final NotificationService notificationService;
 
     @PreAuthorize("hasRole('EMPLOYEE')")
     public RequestResponse createRequest(
@@ -72,7 +73,22 @@ public class RequestService {
         savedRequest.getId(),
         "Request created: " + savedRequest.getTitle()
         );
+        List<User> managers =
+        userRepository.findByRole(
+                com.workflowx.enums.Role.MANAGER
+        );
 
+        for (User manager : managers) {
+
+            notificationService.createNotification(
+            manager.getId(),
+            "New Request Submitted",
+            employee.getFullName()
+                    + " submitted a "
+                    + request.getRequestType()
+                    + " request"
+                 );
+        }
         return mapToResponse(savedRequest);
     }
 
@@ -160,6 +176,13 @@ public class RequestService {
                 savedRequest.getId(),
                 "Request approved: " + savedRequest.getTitle()
         );
+        notificationService.createNotification(
+        request.getEmployee().getId(),
+        "Request Approved",
+        "Your request '"
+                + request.getTitle()
+                + "' has been approved"
+        );
         return mapToResponse(savedRequest);
     }
 
@@ -209,6 +232,13 @@ public class RequestService {
         "REQUEST",
         savedRequest.getId(),
         "Request rejected: " + savedRequest.getTitle()
+        );
+        notificationService.createNotification(
+        request.getEmployee().getId(),
+        "Request Rejected",
+        "Your request '"
+                + request.getTitle()
+                + "' has been rejected"
         );
         return mapToResponse(savedRequest);
     }
@@ -262,6 +292,22 @@ public class RequestService {
         savedRequest.getId(),
         "Request cancelled: " + savedRequest.getTitle()
         );
+        List<User> managers =
+        userRepository.findByRole(
+                com.workflowx.enums.Role.MANAGER
+        );
+
+for (User manager : managers) {
+
+    notificationService.createNotification(
+            manager.getId(),
+            "Request Cancelled",
+            employee.getFullName()
+                    + " cancelled request '"
+                    + request.getTitle()
+                    + "'"
+    );
+}
         return mapToResponse(savedRequest);
     }
 
