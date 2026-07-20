@@ -9,6 +9,8 @@ import com.workflowx.dto.auth.RegisterRequest;
 import com.workflowx.entity.User;
 import com.workflowx.enums.Role;
 import com.workflowx.enums.UserStatus;
+import com.workflowx.exception.ConflictException;
+import com.workflowx.exception.UnauthorizedException;
 import com.workflowx.repository.UserRepository;
 import com.workflowx.security.JwtService;
 
@@ -25,7 +27,7 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new ConflictException("Email already registered");
         }
 
         User user = new User();
@@ -55,13 +57,13 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
 
-        User user = userRepository
-                .findByEmail(request.getEmail())
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "Invalid credentials"
-                        )
-                );
+        User user =
+                userRepository.findByEmail(request.getEmail())
+                        .orElseThrow(
+                                () -> new UnauthorizedException(
+                                        "Invalid credentials"
+                                )
+                        );
 
         boolean matches =
                 passwordEncoder.matches(
@@ -70,7 +72,7 @@ public class AuthService {
                 );
 
         if (!matches) {
-            throw new RuntimeException(
+            throw new UnauthorizedException(
                     "Invalid credentials"
             );
         }

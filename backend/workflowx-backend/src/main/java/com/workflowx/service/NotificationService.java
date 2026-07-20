@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.workflowx.dto.notification.NotificationResponse;
 import com.workflowx.entity.Notification;
 import com.workflowx.entity.User;
+import com.workflowx.exception.ResourceNotFoundException;
 import com.workflowx.repository.NotificationRepository;
 import com.workflowx.repository.UserRepository;
 import com.workflowx.util.SecurityUtils;
@@ -28,10 +29,10 @@ public class NotificationService {
         User user =
                 userRepository.findByEmail(email)
                         .orElseThrow(
-                                () -> new RuntimeException(
-                                        "User not found"
-                                )
-                        );
+        () -> new ResourceNotFoundException(
+                "User not found"
+        )
+);      
 
         return notificationRepository
                 .findByRecipientIdOrderByCreatedAtDesc(
@@ -50,10 +51,10 @@ public class NotificationService {
         User user =
                 userRepository.findByEmail(email)
                         .orElseThrow(
-                                () -> new RuntimeException(
-                                        "User not found"
-                                )
-                        );
+        () -> new ResourceNotFoundException(
+                "User not found"
+        )
+);
 
         return notificationRepository
                 .findByRecipientIdAndIsReadFalseOrderByCreatedAtDesc(
@@ -72,10 +73,10 @@ public class NotificationService {
                 notificationRepository.findById(
                         notificationId
                 ).orElseThrow(
-                        () -> new RuntimeException(
-                                "Notification not found"
-                        )
-                );
+        () -> new ResourceNotFoundException(
+                "Notification not found"
+        )
+);
 
         notification.setIsRead(true);
 

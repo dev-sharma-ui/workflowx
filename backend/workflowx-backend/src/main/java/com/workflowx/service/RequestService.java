@@ -13,6 +13,9 @@ import com.workflowx.entity.Request;
 import com.workflowx.entity.User;
 import com.workflowx.enums.AuditAction;
 import com.workflowx.enums.RequestStatus;
+import com.workflowx.exception.BadRequestException;
+import com.workflowx.exception.ResourceNotFoundException;
+import com.workflowx.exception.UnauthorizedException;
 import com.workflowx.repository.RequestRepository;
 import com.workflowx.repository.UserRepository;
 import com.workflowx.util.SecurityUtils;
@@ -39,10 +42,10 @@ public class RequestService {
         User employee =
                 userRepository.findByEmail(email)
                         .orElseThrow(
-                                () -> new RuntimeException(
-                                        "User not found"
-                                )
-                        );
+        () -> new ResourceNotFoundException(
+                "User not found"
+        )
+);      
 
         Request request = new Request();
 
@@ -101,10 +104,10 @@ public class RequestService {
         User employee =
                 userRepository.findByEmail(email)
                         .orElseThrow(
-                                () -> new RuntimeException(
-                                        "User not found"
-                                )
-                        );
+        () -> new ResourceNotFoundException(
+                "User not found"
+        )
+);
 
         return requestRepository
                 .findByEmployee(employee)
@@ -121,10 +124,10 @@ public class RequestService {
         Request request =
                 requestRepository.findById(requestId)
                         .orElseThrow(
-                                () -> new RuntimeException(
-                                        "Request not found"
-                                )
-                        );
+        () -> new ResourceNotFoundException(
+                "Request not found"
+        )
+);
 
         return mapToResponse(request);
     }
@@ -138,10 +141,10 @@ public class RequestService {
         Request request =
                 requestRepository.findById(requestId)
                         .orElseThrow(
-                                () -> new RuntimeException(
-                                        "Request not found"
-                                )
-                        );
+        () -> new ResourceNotFoundException(
+                "Request not found"
+        )
+);
 
         validatePendingRequest(request);
 
@@ -163,10 +166,10 @@ public class RequestService {
         User manager =
                 userRepository.findByEmail(managerEmail)
                 .orElseThrow(
-                        () -> new RuntimeException(
-                                "Manager not found"
-                        )
-                );
+        () -> new ResourceNotFoundException(
+                "Manager not found"
+        )
+);
 
         auditService.logAction(
                 manager.getId(),
@@ -195,10 +198,10 @@ public class RequestService {
         Request request =
                 requestRepository.findById(requestId)
                         .orElseThrow(
-                                () -> new RuntimeException(
-                                        "Request not found"
-                                )
-                        );
+        () -> new ResourceNotFoundException(
+                "Request not found"
+        )
+);
 
         validatePendingRequest(request);
 
@@ -220,7 +223,7 @@ public class RequestService {
         User manager =
                 userRepository.findByEmail(managerEmail)
                 .orElseThrow(
-                        () -> new RuntimeException(
+                        () -> new ResourceNotFoundException(
                                 "Manager not found"
                         )
                 );
@@ -254,18 +257,18 @@ public class RequestService {
         Request request =
                 requestRepository.findById(requestId)
                         .orElseThrow(
-                                () -> new RuntimeException(
-                                        "Request not found"
-                                )
-                        );
+        () -> new ResourceNotFoundException(
+                "Request not found"
+        )
+);
 
         if (!request.getEmployee()
                 .getEmail()
                 .equals(email)) {
 
-            throw new RuntimeException(
-                    "You can only cancel your own requests"
-            );
+            throw new UnauthorizedException(
+        "You can only cancel your own requests"
+);      
         }
 
         validatePendingRequest(request);
@@ -279,10 +282,10 @@ public class RequestService {
         User employee =
         userRepository.findByEmail(email)
                 .orElseThrow(
-                        () -> new RuntimeException(
-                                "User not found"
-                        )
-                );
+        () -> new ResourceNotFoundException(
+                "User not found"
+        )
+);
 
         auditService.logAction(
         employee.getId(),
@@ -319,9 +322,9 @@ for (User manager : managers) {
         if (request.getStatus()
                 != RequestStatus.PENDING) {
 
-            throw new RuntimeException(
-                    "Request is already finalized"
-            );
+            throw new BadRequestException(
+                "Request is already finalized"
+                );
         }
     }
 
